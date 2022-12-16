@@ -1,37 +1,36 @@
 #!/usr/bin/python3
-"""
-Flask route that returns json status response
-"""
+"""Index of the application"""
 from api.v1.views import app_views
-from flask import jsonify, request
+from models.amenity import Amenity
+from models.base_model import BaseModel
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models.user import User
 from models import storage
+from flask import jsonify
 
 
 @app_views.route('/status', methods=['GET'])
-def status():
-    """
-    function for status route that returns the status
-    """
-    if request.method == 'GET':
-        resp = {"status": "OK"}
-        return jsonify(resp)
+def Index():
+    """Function index"""
+    return jsonify({"status": "OK"})
 
 
 @app_views.route('/stats', methods=['GET'])
-def stats():
-    """
-    function to return the count of all class objects
-    """
-    if request.method == 'GET':
-        response = {}
-        PLURALS = {
-            "Amenity": "amenities",
-            "City": "cities",
-            "Place": "places",
-            "Review": "reviews",
-            "State": "states",
-            "User": "users"
-        }
-        for key, value in PLURALS.items():
-            response[value] = storage.count(key)
-        return jsonify(response)
+def number_objects():
+    """counts the number of objects for each model"""
+
+    classes = {
+        "amenities": Amenity,
+        "cities": City,
+        "places": Place,
+        "reviews": Review,
+        "states": State,
+        "users": User}
+    dictionary = {}
+    for key, cl in classes.items():
+        numb = storage.count(cl)
+        dictionary[key] = numb
+    return jsonify(dictionary)
